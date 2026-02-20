@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Personal</title>
+
+<style>
+/* ====== ESTILO GENERAL - TONO MILITAR ====== */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #0b0f35; /* verde oscuro militar */
+  color: #e0e0e0;
+  margin: 0;
+  padding: 10px;
+}
+
+/* ====== ENCABEZADO ====== */
+header {
+  background: linear-gradient(140deg,#0008fb  0%, #0095ff  100%);
+  color: white;
+  padding: 15px;
+  text-align: center;
+  border-radius: 20px;
+  border: 5px solid #0032fa;
+  margin-bottom: 0.5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+header h2 {
+  color: #00d5ff;
+  letter-spacing: 1px;
+  margin: 0 0 0px 0;
+  font-size: 30px;
+  text-shadow: 2px 2px 4px rgba(87, 56, 56, 0.7);
+}
+
+.efectivo-total {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 0.5px;
+}
+
+.efectivo-total label {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.efectivo-total input {
+  width: 40px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+/* ====== PANEL RESUMEN ====== */
+.panel-resumen {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+.box {
+  flex: 1;
+  padding: 5px;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.box-descuentos {
+  background: linear-gradient(135deg, #5b0202 0%, #e13a37 100%);
+  color: white;
+  border-color: #b71c1c;
+}
+
+.box-disponibles {
+  background: linear-gradient(135deg, #2e7d32 0%, #014b05 100%);
+  color: white;
+  border-color: #1b5e20;
+}
+
+.box-valor {
+  font-size: 32px;
+  margin-top: 5px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* ====== SECCIONES ====== */
+.seccion {
+  background: #011c4a;
+  border: 1px solid #000743;
+  border-radius: 15px;
+  padding: 5px;
+  margin-bottom: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.648);
+}
+
+.seccion h3 {
+  margin: 0 0 12px 0;
+  color: #ffffff;
+  border-bottom: 3px solid #ffffff;
+  padding-bottom: 8px;
+  font-size: 18px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ====== CUADROS DE CATEGORÍA ====== */
+.cuadro {
+  background: #0106367e;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+
+.cuadro:hover {
+  background: #00457a47;
+  border-color: #ffffff;
+}
+
+/* ====== FILA DE CATEGORÍA ====== */
+.fila-categoria {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nombre-categoria {
+  font-weight: bold;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  flex: 2;
+  user-select: none;
+}
+
+.nombre-categoria:hover {
+  color: #ffffff;
+}
+
+.controles {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.controles button {
+  width: 38px;
+  height: 38px;
+  font-size: 22px;
+  font-weight: bold;
+  background: #005514e0;
+  border: none;
+  color: white;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.controles button:hover {
+  background: #005514e0;
+  transform: scale(1.05);
+}
+
+.controles button:active {
+  transform: scale(0.95);
+}
+
+.btn-eliminar {
+  background: #a01717 !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 12px !important;
+  padding: 0 !important;
+}
+
+.btn-eliminar:hover {
+  background: #d32f2f !important;
+}
+
+.contador {
+  font-size: 19px;
+  font-weight: bold;
+  color: #ffffff;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ====== SECCIÓN DE NOMBRES (desplegable) ====== */
+.nombres {
+  display: none;
+  margin-top: 5px;
+  border-top: 1px dashed #ffffff;
+  padding-top: 5px;
+}
+
+.nombres.mostrar {
+  display: block;
+}
+
+.nombres input {
+  width: calc(100% - 100px);
+  margin-right: 5px;
+}
+
+.nombres ul {
+  padding-left: 20px;
+  margin: 8px 0 0 0;
+}
+
+.nombres li {
+  font-size: 14px;
+  color: #ffffff;
+  margin: 3px 0;
+}
+
+/* ====== INPUTS ====== */
+input {
+  background: #061c62c3;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ffffff;
+  box-shadow: 0 0 5px rgb(254, 255, 253);
+}
+
+/* ====== BOTONES ====== */
+button {
+  background: #263f4c;
+  border: 1px solid #607d8b;
+  color: #fff;
+  padding: 8px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background: #455a64;
+}
+
+/* ====== SECCIÓN AGREGAR NUEVA ====== */
+.agregar-nueva {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 2px solid #ffffff;
+}
+
+.agregar-nueva input {
+  flex: 1;
+}
+
+.agregar-nueva button {
+  background: #226125;
+  border: none;
+  white-space: nowrap;
+}
+
+.agregar-nueva button:hover {
+  background: #226125;
+}
+
+/* ====== BOTÓN REINICIAR ====== */
+.reset {
+  width: 100%;
+  background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
+  border: 3px solid #7f0000;
+  font-size: 15px;
+  padding: 8px;
+  margin-top: 25px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.reset:hover {
+  background: linear-gradient(135deg, #3d0202 100%, #e53935 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 600px) {
+  header h2 {
+    font-size: 20px;
+  }
+  
+  .panel-resumen {
+    flex-direction: 1;
+  }
+  
+  .box-valor {
+    font-size: 28px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>⭐CONTROL DE PERSONAL⭐</h2>
+  <div class="efectivo-total">
+    <label>EFECTIVO TOTAL:</label>
+    <input type="number" id="total" value="90" min="1">
+  </div>
+</header>
+
+<div class="panel-resumen">
+  <div class="box box-descuentos">
+    DESCUENTOS
+    <div class="box-valor" id="descuentos">0</div>
+  </div>
+  <div class="box box-disponibles">
+    DISPONIBLES
+    <div class="box-valor" id="disponibles">90</div>
+  </div>
+</div>
+
+<div class="seccion">
+  <h3>📋 SITUACIONES</h3>
+  <div id="situaciones"></div>
+  
+  <div class="agregar-nueva">
+    <input id="nuevaSituacion" placeholder="Nueva situación">
+    <button onclick="agregarSituacion()">➕ AGREGAR</button>
+  </div>
+</div>
+
+<div class="seccion">
+  <h3>🔧 TRABAJOS</h3>
+  <div id="trabajo"></div>
+  
+  <div class="agregar-nueva">
+    <input id="nuevoTrabajo" placeholder="Nueva tarea">
+    <button onclick="agregarTrabajo()">➕ AGREGAR</button>
+  </div>
+</div>
+
+<button class="reset" onclick="reiniciar()">🔄 REINICIAR CONTROL</button>
+
+<script>
+// ========== DATOS INICIALES ==========
+let situaciones = JSON.parse(localStorage.getItem("situaciones")) || [
+  "Serv. Armas","Serv. Internos","Casa Comando","Oficiales",
+  "Vacaciones","Permisos","Comisión","Destacados","EBM"
+];
+
+let trabajos = JSON.parse(localStorage.getItem("trabajos")) || [
+  "Apoyo Rancho","Seguridad","Armería","Carpintería","Peluquería","Administración"
+];
+
+// ========== INICIALIZAR TOTAL ==========
+document.getElementById("total").value = localStorage.getItem("total") || 90;
+document.getElementById("total").onchange = () => {
+  localStorage.setItem("total", total.value);
+  calcular();
+};
+
+// ========== CREAR BLOQUE DE CATEGORÍA ==========
+function crearBloque(nombre, contenedor) {
+  let data = JSON.parse(localStorage.getItem(nombre)) || {cantidad:0, personas:[]};
+
+  const div = document.createElement("div");
+  div.className = "cuadro";
+
+  div.innerHTML = `
+    <div class="fila-categoria">
+      <span class="nombre-categoria" onclick="toggleNombres('${nombre}')">${nombre}</span>
+      <div class="controles">
+        <button class="btn-eliminar" onclick="eliminarCategoria('${nombre}', '${contenedor.id}')" title="Eliminar">🗑️</button>
+        <button onclick="cambiar('${nombre}',-1)">−</button>
+        <span class="contador" id="c_${nombre}">${data.cantidad}</span>
+        <button onclick="cambiar('${nombre}',1)">+</button>
+      </div>
+    </div>
+
+    <div class="nombres" id="n_${nombre}">
+      <input placeholder="Nombre del personal" id="input_${nombre}">
+      <button onclick="agregarNombre('${nombre}')">AGREGAR</button>
+      <ul id="l_${nombre}">
+        ${data.personas.map(p=>`<li>${p}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+  contenedor.appendChild(div);
+}
+
+// ========== CARGAR TODAS LAS CATEGORÍAS ==========
+function cargar() {
+  const situacionesDiv = document.getElementById("situaciones");
+  const trabajoDiv = document.getElementById("trabajo");
+  
+  situacionesDiv.innerHTML = "";
+  trabajoDiv.innerHTML = "";
+  
+  situaciones.forEach(s => crearBloque(s, situacionesDiv));
+  trabajos.forEach(t => crearBloque(t, trabajoDiv));
+  
+  calcular();
+}
+
+// ========== CAMBIAR CANTIDAD ==========
+function cambiar(nombre, valor) {
+  let data = JSON.parse(localStorage.getItem(nombre)) || {cantidad:0, personas:[]};
+  
+  if (data.cantidad + valor < 0) return;
+  
+  data.cantidad += valor;
+  localStorage.setItem(nombre, JSON.stringify(data));
+  document.getElementById("c_"+nombre).innerText = data.cantidad;
+  
+  calcular();
+}
+
+// ========== CALCULAR DESCUENTOS Y DISPONIBLES ==========
+function calcular() {
+  let total = parseInt(document.getElementById("total").value);
+  let suma = 0;
+  
+  [...situaciones, ...trabajos].forEach(nombre => {
+    let data = JSON.parse(localStorage.getItem(nombre));
+    if (data) suma += data.cantidad;
+  });
+  
+  if (suma > total) {
+    alert("⚠️ EFECTIVO INSUFICIENTE");
+    return;
+  }
+  
+  document.getElementById("descuentos").innerText = suma;
+  document.getElementById("disponibles").innerText = total - suma;
+}
+
+// ========== TOGGLE NOMBRES (Mostrar/Ocultar) ==========
+function toggleNombres(nombre) {
+  let elemento = document.getElementById("n_"+nombre);
+  if (elemento.classList.contains("mostrar")) {
+    elemento.classList.remove("mostrar");
+  } else {
+    elemento.classList.add("mostrar");
+  }
+}
+
+// ========== AGREGAR NOMBRE A UNA CATEGORÍA ==========
+function agregarNombre(nombre) {
+  let input = document.getElementById("input_"+nombre);
+  
+  if (!input.value.trim()) return;
+  
+  let data = JSON.parse(localStorage.getItem(nombre)) || {cantidad:0, personas:[]};
+  data.personas.push(input.value.trim());
+  
+  localStorage.setItem(nombre, JSON.stringify(data));
+  input.value = "";
+  
+  cargar();
+}
+
+// ========== AGREGAR NUEVA SITUACIÓN ==========
+function agregarSituacion() {
+  let valor = document.getElementById("nuevaSituacion").value.trim();
+  
+  if (!valor) return;
+  
+  if (situaciones.includes(valor)) {
+    alert("⚠️ Esta situación ya existe");
+    return;
+  }
+  
+  situaciones.push(valor);
+  localStorage.setItem("situaciones", JSON.stringify(situaciones));
+  document.getElementById("nuevaSituacion").value = "";
+  
+  cargar();
+}
+
+// ========== AGREGAR NUEVO TRABAJO ==========
+function agregarTrabajo() {
+  let valor = document.getElementById("nuevoTrabajo").value.trim();
+  
+  if (!valor) return;
+  
+  if (trabajos.includes(valor)) {
+    alert("⚠️ Esta tarea ya existe");
+    return;
+  }
+  
+  trabajos.push(valor);
+  localStorage.setItem("trabajos", JSON.stringify(trabajos));
+  document.getElementById("nuevoTrabajo").value = "";
+  
+  cargar();
+}
+
+// ========== ELIMINAR CATEGORÍA ==========
+function eliminarCategoria(nombre, contenedorId) {
+  if (!confirm(`⚠️ ¿Eliminar "${nombre}"?\n\nEsto borrará todos los datos asociados.`)) {
+    return;
+  }
+  
+  // Determinar si es situación o trabajo
+  if (contenedorId === "situaciones") {
+    situaciones = situaciones.filter(s => s !== nombre);
+    localStorage.setItem("situaciones", JSON.stringify(situaciones));
+  } else {
+    trabajos = trabajos.filter(t => t !== nombre);
+    localStorage.setItem("trabajos", JSON.stringify(trabajos));
+  }
+  
+  // Eliminar datos de localStorage
+  localStorage.removeItem(nombre);
+  
+  // Recargar
+  cargar();
+}
+
+// ========== REINICIAR TODO ==========
+function reiniciar() {
+  if (confirm("⚠️ ¿REINICIAR TODO EL CONTROL?\n\nEsto borrará todos los datos almacenados.")) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// ========== INICIAR AL CARGAR ==========
+cargar();
+</script>
+
+</body>
+</html>
